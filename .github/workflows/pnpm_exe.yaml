@@ -33,10 +33,12 @@ jobs:
           cache: 'pnpm'
 
       - name: Setup pnpm
-        run: |
-          npm install -g pnpm@7
-          echo "Checking pnpm version..."
-          pnpm --version # Verify installation
+         run: |
+            npm install -g pnpm@7
+            export PATH=$(npm bin -g):$PATH  # Include global npm binaries in PATH
+            echo "Checking pnpm version..."
+            pnpm --version # Verify installation
+      
 
       - name: Install dependencies
         run: pnpm install
