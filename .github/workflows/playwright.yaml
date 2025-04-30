@@ -12,35 +12,36 @@ on:
 
 env:
   ALLURE_TOKEN: ${{ secrets.ALLURE_TOKEN }}
-  ALLURE_JOB_RUN_ID: ${{ github.event.inputs.ALLURE_JOB_RUN_ID }}
   ALLURE_ENDPOINT: https://testing.testops.cloud/
   ALLURE_PROJECT_ID: 12440
   ALLURE_RESULTS: allure-results
-  ALLURE_LAUNCH_TAGS: Tag 1
-  
+
 jobs:
   test:
-    timeout-minutes: 60
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '14.x'
-    - name: Install dependencies
-      run: npm install
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Install allurectl
-      uses: allure-framework/setup-allurectl@v1
-      with:
-        allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
-        allure-token: ${{ secrets.ALLURE_TOKEN }}
-        allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
-    - name: Log ALLURE_USERNAME
-      run: echo ${{ github.event.inputs.ALLURE_USERNAME }}
-    - name: Run Playwright tests
-      run: allurectl watch -- npx playwright test
-      env:
-        TEST_ENDPOINT: ${{ github.event.inputs.TEST_ENDPOINT }}
-        TEST_BROWSER: ${{ github.event.inputs.TEST_BROWSER }}
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Setup AllureCTL
+        uses: allure-framework/setup-allurectl@v1
+        with:
+          allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
+          allure-token: ${{ env.ALLURE_TOKEN }}
+          allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
+
+      - name: Run Playwright under AllureCTL
+        run: |
+          allurectl watch -- npx playwright test --alluredir=${{ env.ALLURE_RESULTS }}
