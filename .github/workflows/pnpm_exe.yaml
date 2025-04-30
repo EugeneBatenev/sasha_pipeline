@@ -30,10 +30,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '16'
-          cache: 'pnpm'              # кешировать pnpm-модули
+          cache: 'pnpm'
 
       - name: Setup pnpm
-        run: npm install -g pnpm@7   # или нужная вам версия
+        run: |
+          npm install -g pnpm@7
+          echo "Checking pnpm version..."
+          pnpm --version # Verify installation
 
       - name: Install dependencies
         run: pnpm install
